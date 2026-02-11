@@ -1,24 +1,43 @@
-# Compiled class file
+# === Java / Maven Build Artifacts ===
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+target/
+!target/test-classes/           # Keep if you want to version test classes (rare, optional)
 *.jar
 *.war
-*.nar
 *.ear
+*.jar.original
+*.war.original
+*.ear.original
+*.log
+
+# Maven wrapper / local repo cache (usually ignored)
+.mvn/repository/
+
+# === Package Archives ===
 *.zip
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# === JVM Crash Logs ===
 hs_err_pid*
 replay_pid*
+
+# === IDE / Editor Files ===
+.idea/                  # IntelliJ IDEA
+*.iml
+*.iws
+.vscode/                # VS Code
+.classpath              # Eclipse
+.project
+.settings/
+
+# === OS / Temp Files ===
+.DS_Store               # macOS
+Thumbs.db               # Windows
+ehthumbs.db
+*.tmp
+*.bak
+*~
+
+# === Lombok / Misc ===
+lombok.config           # Only if you create a custom one

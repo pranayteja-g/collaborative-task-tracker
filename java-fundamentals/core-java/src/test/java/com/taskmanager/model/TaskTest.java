@@ -1,11 +1,16 @@
 package com.taskmanager.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.print.attribute.HashAttributeSet;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,5 +44,25 @@ public class TaskTest {
         assertEquals(3, tasks.size(), "List allows duplicates even if equals() is true");
         assertTrue(tasks.contains(t1));
         assertTrue(tasks.contains(t3), "contains uses equals() → same ID is considered present");
+    }
+
+    @Test
+    void testTaskSet_noDuplicatesById() {
+        Task t1 = new Task(1L, "Task A", "Desc A", "TODO");
+        Task t2 = new Task(2L, "Task B", "Desc B", "DONE");
+        Task t3 = new Task(1L, "Task A updated", "New desc", "IN_PROGRESS"); // same ID
+
+        Set<Task> taskSet = new HashSet<>();
+
+        boolean added1 = taskSet.add(t1);
+        boolean added2 = taskSet.add(t2);
+        boolean added3 = taskSet.add(t3);
+
+        assertTrue(added1);
+        assertTrue(added2);
+        assertFalse(added3, "add() returns false for duplicate by ID");
+
+        assertEquals(2, taskSet.size(), "set enforces uniqueness via equals() + hashCode() ");
+        assertTrue(taskSet.contains(t3), "contains() finds qual element");
     }
 }

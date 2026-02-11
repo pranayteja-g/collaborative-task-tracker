@@ -3,14 +3,15 @@ package com.taskmanager.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import javax.print.attribute.HashAttributeSet;
 
 import org.junit.jupiter.api.Test;
 
@@ -64,5 +65,26 @@ public class TaskTest {
 
         assertEquals(2, taskSet.size(), "set enforces uniqueness via equals() + hashCode() ");
         assertTrue(taskSet.contains(t3), "contains() finds qual element");
+    }
+
+    @Test
+    void testTaskMap_byId() {
+        Task t1 = new Task(1L, "Meeting", "Team sync", "TODO");
+        Task t2 = new Task(2L, "Email client", "Follow up", "DONE");
+
+        Map<Long, Task> taskMap = new HashMap<>();
+
+        taskMap.put(t1.getId(), t1);
+        taskMap.put(t2.getId(), t2);
+
+        assertEquals(2, taskMap.size());
+        assertSame(t1, taskMap.get(1L)); // same reference
+        assertEquals("Meeting", taskMap.get(1L).getTitle());
+        // overwrite with same key
+        Task t3 = new Task(1L, "Updated meeting", "New agenda", "DONE");
+        taskMap.put(t3.getId(), t3);
+
+        assertEquals(2, taskMap.size(), "map replaces on the same key");
+        assertEquals("Updated meeting", taskMap.get(1L).getTitle());
     }
 }

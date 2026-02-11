@@ -7,11 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -86,5 +88,22 @@ public class TaskTest {
 
         assertEquals(2, taskMap.size(), "map replaces on the same key");
         assertEquals("Updated meeting", taskMap.get(1L).getTitle());
+    }
+
+    @Test
+    void testFilterTodoTasksAndSortTitles() {
+        Task t1 = new Task(1L, "Clean kitchen", "...", "TODO");
+        Task t2 = new Task(2L, "Buy groceries", "...", "DONE");
+        Task t3 = new Task(3L, "Read chapter 5", "...", "TODO");
+        Task t4 = new Task(4L, "Call mom", "...", "IN_PROGRESS");
+
+        List<Task> tasks = List.of(t1, t2, t3, t4);
+        List<String> todoTitles = tasks.stream()
+                .filter(task -> "TODO".equals(task.getStatus()))
+                .map(Task::getTitle)
+                .sorted()
+                .collect(Collectors.toList());
+        
+        assertEquals(List.of("Clean kitchen", "Read chapter 5"), todoTitles);
     }
 }

@@ -92,10 +92,10 @@ public class TaskTest {
 
     @Test
     void testFilterTodoTasksAndSortTitles() {
-        Task t1 = new Task(1L, "Clean kitchen", "...", "TODO");
-        Task t2 = new Task(2L, "Buy groceries", "...", "DONE");
-        Task t3 = new Task(3L, "Read chapter 5", "...", "TODO");
-        Task t4 = new Task(4L, "Call mom", "...", "IN_PROGRESS");
+        Task t1 = Task.of(1L, "Clean kitchen", "...", "TODO");
+        Task t2 = Task.of(2L, "Buy groceries", "...", "DONE");
+        Task t3 = Task.of(3L, "Read chapter 5", "...", "TODO");
+        Task t4 = Task.of(4L, "Call mom", "...", "IN_PROGRESS");
 
         List<Task> tasks = List.of(t1, t2, t3, t4);
         List<String> todoTitles = tasks.stream()

@@ -13,6 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -103,7 +109,50 @@ public class TaskTest {
                 .map(Task::getTitle)
                 .sorted()
                 .collect(Collectors.toList());
-        
+
         assertEquals(List.of("Clean kitchen", "Read chapter 5"), todoTitles);
+    }
+
+    @Test
+    void testConcurrentAddToList_raceConditionPossible() throws InterruptedException, ExecutionException {
+        // List<Task> tasks = new ArrayList<>();
+
+        // List<Task> tasks = new CopyOnWriteArrayList<>();
+
+        List<Task> tasks = Collections.synchronizedList(new ArrayList<>());
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        Runnable addTask = () -> {
+            for (int i = 0; i < 1000; i++) {
+                tasks.add(Task.of((long) i, "Task " + i, "Desc", "TODO"));
+            }
+        };
+
+        // Thread t1 = new Thread(addTask);
+        // Thread t2 = new Thread(addTask);
+        // t1.start();
+        // t2.start();
+
+        // t1.join();
+        // t2.join();
+
+        // submit and get futures
+        Future<?> future1 = executor.submit(addTask);
+        Future<?> future2 = executor.submit(addTask);
+
+        // wait for both to finish
+        future1.get();
+        future2.get();
+
+        executor.shutdown();
+
+        // wait max 5 seconds for graceful shutdown.
+        boolean terminated = executor.awaitTermination(5, TimeUnit.SECONDS);
+        assertTrue(terminated, "Executor should terminate cleanly");
+        // expected: 2000 tasks, but often less due to race condition
+        System.out.println("Number of tasks: " + tasks.size());
+        assertTrue(tasks.size() <= 2000, "size should not exceed expented");
+
     }
 }

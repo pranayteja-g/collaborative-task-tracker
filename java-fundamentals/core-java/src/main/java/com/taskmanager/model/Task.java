@@ -14,10 +14,10 @@ public class Task {
     // Static factory method with validation -> factory pattern
     public static Task of(Long id, String title, String description, String status) {
         if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
+            throw new InvalidTaskException("ID cannot be null");
         }
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be null or blank");
+            throw new InvalidTaskException("Title cannot be null or blank");
         }
         // You can add more rules here (e.g. status in allowed values)
 

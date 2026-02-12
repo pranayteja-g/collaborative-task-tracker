@@ -1,4 +1,7 @@
 package com.taskmanager.model;
+
+import java.util.List;
+
 import lombok.*;
 
 @Data
@@ -24,8 +27,7 @@ public class Task {
         return new Task(id, title.trim(), description, status);
     }
 
-    public boolean isCompleted(){
+    public boolean isCompleted() {
         return "DONE".equals(status);
     }
-
 }

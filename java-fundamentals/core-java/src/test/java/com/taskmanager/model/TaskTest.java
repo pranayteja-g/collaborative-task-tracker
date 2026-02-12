@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-public class TaskTest {
+class TaskTest {
 
     @Test
     void testTaskEqualityBasedOnId() {
@@ -154,5 +153,68 @@ public class TaskTest {
         System.out.println("Number of tasks: " + tasks.size());
         assertTrue(tasks.size() <= 2000, "size should not exceed expented");
 
+    }
+
+    // helper method to create sample data
+    private List<Task> createSampleTasks() {
+        return List.of(
+                Task.of(1L, "Write report", "Q4", "TODO"),
+                Task.of(2L, "Review PR", "Bug fix", "IN_PROGRESS"),
+                Task.of(3L, "Call client", "Follow up", "TODO"),
+                Task.of(4L, "Deploy app", "Production", "DONE"),
+                Task.of(5L, "Fix tests", "Coverage", "IN_PROGRESS"),
+                Task.of(6L, "Team meeting", "Planning", "TODO"),
+                Task.of(7L, "Update docs", "API spec", "DONE"));
+    }
+
+    @Test
+    void testGroupTasksByStatus() {
+        List<Task> tasks = createSampleTasks();
+
+        Map<String, List<Task>> groupedByStatus = tasks.stream().collect(Collectors.groupingBy(Task::getStatus));
+
+        assertEquals(3, groupedByStatus.size(), "Should have 3 distinct statuses");
+        assertEquals(3, groupedByStatus.get("TODO").size());
+        assertEquals(2, groupedByStatus.get("IN_PROGRESS").size());
+        assertEquals(2, groupedByStatus.get("DONE").size());
+
+    }
+
+    @Test
+    void testCountTasksPerStatus() {
+        List<Task> tasks = createSampleTasks();
+
+        Map<String, Long> countByStatus = tasks.stream()
+                .collect(Collectors.groupingBy(
+                        Task::getStatus,
+                        Collectors.counting()));
+
+        assertEquals(3L, countByStatus.get("TODO"));
+        assertEquals(2L, countByStatus.get("IN_PROGRESS"));
+        assertEquals(2L, countByStatus.get("DONE"));
+    }
+
+    @Test
+    void testTitlesGroupedByStatus() {
+        List<Task> tasks = createSampleTasks();
+
+        Map<String, List<String>> titlesByStatus = tasks.stream()
+                .collect(Collectors.groupingBy(
+                        Task::getStatus,
+                        Collectors.mapping(Task::getTitle, Collectors.toList())));
+
+        assertEquals(List.of("Write report", "Call client", "Team meeting"),
+                titlesByStatus.get("TODO"));
+    }
+
+    @Test
+    void testPartitionCompletedTasks() {
+        List<Task> tasks = createSampleTasks();
+
+        Map<Boolean, List<Task>> partitioned = tasks.stream()
+                .collect(Collectors.partitioningBy(Task::isCompleted));
+
+        assertEquals(2, partitioned.get(true).size(), "Completed (DONE)");
+        assertEquals(5, partitioned.get(false).size(), "Not Completed");
     }
 }

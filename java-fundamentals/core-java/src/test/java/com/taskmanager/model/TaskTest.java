@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -216,5 +218,29 @@ class TaskTest {
 
         assertEquals(2, partitioned.get(true).size(), "Completed (DONE)");
         assertEquals(5, partitioned.get(false).size(), "Not Completed");
+    }
+
+    @Test
+    void testImmutableTask_recordBehaviour() {
+        ImmutableTask t1 = new ImmutableTask(1L, "Write report", "Q4", "TODO");
+        ImmutableTask t2 = new ImmutableTask(1L, "Write report", "Q4", "TODO");
+
+        // Auto-generated equals() and hashCode() (compares all components)
+        assertEquals(t1, t2);
+        assertEquals(t1.hashCode(), t2.hashCode());
+
+        // Auto-Generated to string
+        assertTrue(t1.toString().contains("Write report"));
+
+        assertTrue(t1.isCompleted() == false);
+    }
+
+    @Test
+    void testImmutableTask_validationInCompactConstructor() {
+        assertThrows(NullPointerException.class,
+                () -> new ImmutableTask(null, "Title", "Desc", "TODO"));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new ImmutableTask(1L, "   ", "Desc", "TODO"));
     }
 }

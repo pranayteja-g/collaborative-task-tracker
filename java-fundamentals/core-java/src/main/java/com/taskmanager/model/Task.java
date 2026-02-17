@@ -1,6 +1,6 @@
 package com.taskmanager.model;
 
-import java.util.List;
+import java.util.*;
 
 import lombok.*;
 
